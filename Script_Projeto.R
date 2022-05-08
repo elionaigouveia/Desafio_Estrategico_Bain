@@ -20,7 +20,7 @@ head(agriculture) #visualizar alguns dados
 str(agriculture) # vizualizar como os dados estão sendo armazenados
 #aqui os dados NaN foram excluídos
 agriculture <- data.frame(agriculture[complete.cases(agriculture),]) #limpar NA e transformar em data frame
-colnames(agriculture) <-c("Ano", "Cidade", "Tipo de Produto", "Produto", "Area") #atribuicao de nomes das colunas
+colnames(agriculture) <-c("Ano", "Cidade", "Tipo_de_Produto", "Produto", "Area") #atribuicao de nomes das colunas
 #agriculture <- order(rank(agriculture$Ano),) 
 #agriculture <- dmy(agriculture$Ano)
 agriculture[order(rank(agriculture$Ano))]  #colocando as datas em ordem crescente
@@ -72,27 +72,35 @@ boxplot(Cidade0307883b5d063703TipotemporaryProdutoOthers[,5])
 c01 <- Cidade0307883b5d063703TipopastureProdutoLivestock
 
 train_data = c01[c01$Ano <= 2015-01-01,];
-test_data = c01[C01$Ano > 2015-01-01,];
+test_data = c01[c01$Ano > 2015-01-01,];
 
 #Use the Area column to check the quality of the prediction against actual values
 actual_area <- test_data$Ano;
 
 #Model 1: Use lm to create a linear regression model, trained with the training data set
-model_lm <- lm(c01$Area ~ c01$Cidade + c01$Tipo_de_Produto + c01$Produto + c01$Produto, data = train_data);
+model_lm <- lm(c01$Area ~ c01$Cidade + c01$Tipo_de_Produto + c01$Produto, data = train_data);
 
 
 #Model 2: Use rpart to create a decision tree model, trained with the training data set
 library(rpart);
-model_rpart  <- rpart(c01$Area ~  c01$Ano, data = test_data);
+model_rpart  <- rpart(c01$Area ~ c01$Cidade + c01$Tipo_de_Produto + c01$Produto, data = train_data);
 
 #Use both models to make predictions using the test data set.
 predit_lm <- predict(model_lm, test_data)
-predit_lm <- data.frame(Area_Pred = predict_lm, Area = test_data$Area, 
-                         Year = test_data$Ano)
+predit_lm <- data.frame(Ano = test_data$Ano, 
+                        Cidade = agriculture$Cidade, 
+                        Tipo_de_Produto = agriculture$Tipo_de_Produto,
+                        Produto = agriculture$Produto,
+                        Area = test_data$Area,
+                        Area_Pred = predict_lm)
 
 predit_rpart  <- predict(model_rpart,  test_data)
-predit_rpart <- data.frame(Area_Pred = predict_rpart, Area = test_data$Area, 
-                            Ano = test_data$Ano)
+predit_rpart <- data.frame(Ano = test_data$Ano, 
+                           Cidade = agriculture$Cidade, 
+                           Tipo_de_Produto = agriculture$Tipo_de_Produto,
+                           Produto = agriculture$Produto,
+                           Area = test_data$Area,
+                           Area_Pred = predict_lm)
 
 #To verify it worked, look at the top rows of the two prediction data sets.
 head(predit_lm);
@@ -114,10 +122,3 @@ plot_rp <- plot(predit_rpart$Area_Pred  - predit_rpart$Area,  main = "Difference
 
 
 
-
-
-
-
-
-####
-partes que não deram certo
