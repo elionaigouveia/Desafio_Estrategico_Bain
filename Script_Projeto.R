@@ -11,6 +11,7 @@ library(lubridate)   #converter datas
 library(readxl) # ler arquivo excel
 library(plyr)   # ordenar a coluna do dataframe
 library(xts)
+library(dplyr)
 
 ################################################################################
 ############################ Importando os dados ###############################
@@ -25,7 +26,7 @@ agriculture <- agriculture[order(agriculture$Ano, agriculture$Cidade, agricultur
 
 
 #pontos a melhorar
-#1- não retirar os dados NaN, mas substituí-los pela média?? 
+#1- não retirar os dados NaN, mas substituí-los pela média 
 
 ################################################################################
 ################### filtro para cidades, produtos e tipos ######################
@@ -119,8 +120,6 @@ plot_rp <- plot(predit_rpart$Area_Pred  - predit_rpart$Area,  main = "Difference
 dat <- Cidadebe4424aa54f8d2aeTipotemporaryProdutoSoy
 ord.dat <- dat[order(dat$Ano),]
 ts_dat = ts(ord.dat$Area, start=2010)
-treino = window(ts_dat, start=2010, end=2015)
-teste = window(ts_dat, start=2016, end=2017))
 
 
 ts_dat = ts(ord.dat$Area, start=2010)
@@ -143,13 +142,49 @@ autoplot(f_ets_dats, ts.colour = 'blue',predict.colour = 'red',predict.linetype 
 autoplot(f_ets_dats, ts.colour = 'red',predict.colour = 'black',predict.linetype = 'dashed', conf.int = TRUE,conf.int.fill = 'yellow') + ggtitle("Projeção da area para 2018 e 2019") + labs(x="Ano",y="Área") 
 autoplot(f_ets_dats,  ts.colour = 'darkgreen',predict.colour = 'blue',predict.linetype = 'dashed', conf.int = TRUE,conf.int.fill = 'yellow') + ggtitle("Projeção da area para 2018 e 2019") + labs(x="Ano",y="Área") 
 
+############################# segunda tentativa ################################
+dat <- Cidadebe4424aa54f8d2aeTipotemporaryProdutoSoy
+ord.dat <- dat[order(dat$Ano),]
+ts_dat = ts(ord.dat$Area, start=2010)
+treino = window(ts_dat, start=2010, end=2015)
+teste = as.data.frame(window(ts_dat, start=2016, end=2017))
+
+modelo_reg_mult = tslm(treino ~ trend, data = treino)
+
+Prev1 = forecast(modelo_reg_mult, h = 2)
+
+#compara os dois
+plot(ts_dat)
+lines(Prev1$mean, col="red")
+
+library(data.table)
+dat1 <- Cidadeab984377b2dc0284TipotemporaryProdutoCassava
+dat1 <- dat1[order(dat1$Ano, decreasing = T),][1:4,]
+ord.dat1 <- dat1[order(dat1$Ano),]
+
+
+ts_dat1 = ts(ord.dat1$Area, start=(2014))
+treino = window(ts_dat1, start=2014, end=2015)
+teste = as.data.frame(window(ts_dat1, start=2016, end=2017))
+
+
+modelo_reg_mult_1 = tslm(treino ~ trend, data = treino)
+
+Prev1 = forecast(modelo_reg_mult_1, h = 2)
+plot(ts_dat1)
+lines(Prev1$mean, col="red")
+
+
+## problemas: transformar um dataframe em série temporal sem perder as colunas
+## olhar para os modelos de regressão logistica/arvore de decisão/regressão multivariada e entender como as colunas são usadas sozinha 
+
 ################################################################################
 ############################### Exportando dados ###############################
 ################################################################################
 
 
 
-
+# fazer uma fç que analisa tres modelos prevê o menor erro e aplica
 
 
 
