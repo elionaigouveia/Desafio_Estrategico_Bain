@@ -62,12 +62,14 @@ for(j in 1:length(cidades)){
   }
 }
 
+
+
 #plot de uma serie qualquer
 plot(Cidade07ce2e79e19977e9TipotemporaryProdutoOthers[,5],type='l', ylab="Area")
 boxplot(Cidade0307883b5d063703TipotemporaryProdutoOthers[,5])
 
 ################################################################################
-############################## Modelo Preditivo ################################
+############################# Modelos Preditivos ###############################
 ################################################################################
 #modelo preditivo para o primeiro dataframe
 #modelo preditivo usando regressão linear e arvore de decisão
@@ -114,6 +116,33 @@ plot_lm <- plot(predit_lm$Area_Pred - predit_lm$Area, main = "Difference between
 plot_rp <- plot(predit_rpart$Area_Pred  - predit_rpart$Area,  main = "Difference between actual and predicted. rpart")
 
 #modelo usando séries temporais
+dat <- Cidadebe4424aa54f8d2aeTipotemporaryProdutoSoy
+ord.dat <- dat[order(dat$Ano),]
+ts_dat = ts(ord.dat$Area, start=2010)
+treino = window(ts_dat, start=2010, end=2015)
+teste = window(ts_dat, start=2016, end=2017))
+
+
+ts_dat = ts(ord.dat$Area, start=2010)
+#ts_dat = ts(ord.dat$Area, start=c(2010,1),frequency=1) #início 2010, frequência de 1 em 1 anos
+plot(ts_dat) #gráfico da area destinada para essa tipo de produto especifico
+
+library(forecast) #biblioteca de forecast
+m_ets_dats = ets(ts_dat) #modelo de ets
+f_ets_dats = forecast(m_ets_dats, h=2) # previsão para 2018,2019
+plot(f_ets_dats) #gráfico de forecast básico
+summary(f_ets_dats) #resumo das informações do forecast
+autoplot(f_ets_dats, ts.colour = 'blue',predict.colour = 'red',predict.linetype = 'dashed', conf.int = TRUE,conf.int.fill = 'lightblue') # aperfeiçoamento do gráfico de forecast 
+library(ggplot2)
+# autoplot(f_ets_dats, ts.colour = 'blue',predict.colour = 'red',predict.linetype = 'dashed', conf.int = TRUE,conf.int.fill = 'lightblue') + ggtitle("Projeção da area para 2018 e 2019") + labs(x="Ano",y="Area") + annotate("text",x=2010,y=-1,label="Previsão para 2019: x área",color="red")
+packs <- c("png","grid") #lendo bibliotecas
+lapply(packs, require, character.only = TRUE)
+
+
+autoplot(f_ets_dats, ts.colour = 'blue',predict.colour = 'red',predict.linetype = 'dashed', conf.int = TRUE,conf.int.fill = 'lightblue') + ggtitle("Projeção da area para 2018 e 2019") + labs(x="Ano",y="Área") 
+autoplot(f_ets_dats, ts.colour = 'red',predict.colour = 'black',predict.linetype = 'dashed', conf.int = TRUE,conf.int.fill = 'yellow') + ggtitle("Projeção da area para 2018 e 2019") + labs(x="Ano",y="Área") 
+autoplot(f_ets_dats,  ts.colour = 'darkgreen',predict.colour = 'blue',predict.linetype = 'dashed', conf.int = TRUE,conf.int.fill = 'yellow') + ggtitle("Projeção da area para 2018 e 2019") + labs(x="Ano",y="Área") 
+
 ################################################################################
 ############################### Exportando dados ###############################
 ################################################################################
