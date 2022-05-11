@@ -13,6 +13,10 @@ library(plyr)        # ordenar a coluna do dataframe
 library(xts)
 library(dplyr)
 library(ggplot2)
+#library(plyr)        # ordenar a coluna do dataframe
+#library(xts)
+#library(ggplot2)
+
 
 ################################################################################
 ############################ Importando os dados ###############################
@@ -41,7 +45,7 @@ table(agriculture$Produto)
 table(agriculture$`Tipo_de_Produto`)
 (tipo <- unique(agriculture$`Tipo_de_Produto`))
 
-nrow(subset(agriculture, agriculture$Cidade==cidades[1] & 
+x <- nrow(subset(agriculture, agriculture$Cidade==cidades[1] & 
               agriculture$Produto==produtos[1] &
               agriculture$`Tipo_de_Produto`==tipo[1]))
 
@@ -89,10 +93,11 @@ lines(Prev1$mean, col="red")
 ###################### mesma tabela - 2016 - 2017 ##############################
 dat <- Cidadebe4424aa54f8d2aeTipotemporaryProdutoSoy
 dat <- dat[order(dat$Ano, decreasing = T),][1:4,]
+ord.dat1 <- dat1[order(dat1$Ano),]
 ord.dat <- dat[order(dat$Ano),]
-ts_dat = ts(ord.dat$Area, start=2014, end=2017)
-treino = window(ts_dat, end=2015)
-teste = as.data.frame(window(ts_dat, start=2016))
+ts_dat = ts(ord.dat$Area, start=2010, end=2017)
+treino = window(ts_dat, start=2010, end=2015)
+teste = as.data.frame(window(ts_dat, start=2016, end=2017))
 
 modelo_reg_mult = tslm(treino ~ trend, data = treino)
 
@@ -141,7 +146,7 @@ m_es_dats = window(es_dats, start= 2014)
 p_es_dats = ses(es_dats, h = 2) # Previsao para os próximos 2 anos
 summary(p_es_dats)
 
-#modelo de Holt e holt com dolp
+#modelo de Holt e holt com damp
 dats <- Cidadeab984377b2dc0284TipotemporaryProdutoCassava
 dats <- dats[order(dats$Ano, decreasing = T),][1:4,]
 dats <- dats[order(dats$Ano, decreasing = F),][1:2,]
